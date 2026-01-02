@@ -84,6 +84,7 @@ jobs:
         contents: read
         packages: read
         statuses: write
+        security-events: write
 
       steps:
         - name: Downloading code from repo
