@@ -196,7 +196,7 @@ jobs:
   Deploy-Test-K8s:
     name: Test Deployment in Kubernetes (Kind)
     runs-on: ubuntu-latest
-    needs: [Docker-Build-Push]
+    needs: [Post-Build-Scan]
     
     steps:
       - name: Checkout code
