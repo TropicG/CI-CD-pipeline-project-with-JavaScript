@@ -39,7 +39,7 @@ jobs:
       
       steps:
         - name: Download all workflow run artifacts
-          uses: actions/download-artifact@v5
+          uses: actions/download-artifact@v4
           with:
             name: production-code
           
@@ -50,10 +50,7 @@ jobs:
 
         - name: Install dependencies
           run: npm install
-
-        - name: Run EsLint
-          run: npm run lint
-          
+    
         - name: run linters
           uses: wearerequired/lint-action@v2
           with:
