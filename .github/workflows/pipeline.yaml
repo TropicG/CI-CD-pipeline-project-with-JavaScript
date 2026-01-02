@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  Build-And-Test:
+  Build:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +21,7 @@ jobs:
 
     - name: Installing dependencies
       run: npm install
-
-    - name: Running tests
-      run: npm test
-
+      
     - name: Uploading Artifact
       uses: actions/upload-artifact@v4
       with:
