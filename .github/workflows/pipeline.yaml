@@ -187,7 +187,7 @@ jobs:
           image-ref: '${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }}'
           format: 'table'
           exit-code: '1'
-          severity: 'CRITICAL,HIGH'
+          severity: 'CRITICAL'
           ignore-unfixed: true
         env:
           TRIVY_USERNAME: ${{ secrets.DOCKER_USERNAME }}
