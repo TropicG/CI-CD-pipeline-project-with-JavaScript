@@ -31,6 +31,7 @@ jobs:
   Linter:
       name: Code checking with Linter
       runs-on: ubuntu-latests
+      needs: [Build]
       steps:
         - name: Getting code from Git repo
           uses: actions/checkout@v4
