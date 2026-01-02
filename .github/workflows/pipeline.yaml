@@ -113,7 +113,7 @@ jobs:
           uses: actions/checkout@v4
 
         - name: Run Trivy Scanner for Dependencies
-        - uses: aquasecurity/trivy-action@master
+          uses: aquasecurity/trivy-action@master
           with:
             scan-type: 'fs'
             scan-ref: '.'
