@@ -34,8 +34,24 @@ jobs:
       steps:
         - name: Getting code from Git repo
           uses: actions/checkout@v4
+
+        - name: Download all workflow run artifacts
+          uses: actions/download-artifact@v5
+          
         - name: Setup Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '20'
+
+        - name: Setup EsLint and Prettier
+          run: npm install --save-dev eslint prettier eslint-config-prettier
+
+        - name: Installing Dependencies
+          run: npm install
+
+        - name: run linters
+          uses: wearerequired/lint-action@v2
+          with:
+            eslint: true
+            prettier: true
         
