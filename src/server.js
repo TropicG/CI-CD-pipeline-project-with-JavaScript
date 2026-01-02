@@ -17,6 +17,12 @@ app.get('/add', (req, res) => {
   res.send(`Result: ${add(a, b)}`);
 });
 
+app.get('/subtract', (req, res) => {
+  const a = parseInt(req.query.a) || 0;
+  const b = parseInt(req.query.b) || 0;
+  res.send(`Result: ${subtract(a, b)}`);
+});
+
 app.listen(PORT, HOST, () => {
   console.log(`Running on http://${HOST}:${PORT}`);
 });
