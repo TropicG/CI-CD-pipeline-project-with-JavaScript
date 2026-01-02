@@ -51,10 +51,6 @@ jobs:
         - name: Install dependencies
           run: npm install
     
-        - name: run linters
-          uses: wearerequired/lint-action@v2
-          with:
-             eslint: true
-             prettier: true
-             github_token: ${{ secrets.GITHUB_TOKEN }}
+        - name: Run Linter
+          run: npm run lint
         
