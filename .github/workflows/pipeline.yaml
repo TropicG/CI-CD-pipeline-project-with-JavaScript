@@ -75,11 +75,38 @@ jobs:
 
         - name: Run Prettier
           run: npm run format:check
+
+  Unit-Tests:
+      name: Downloading the artifact
+      runs-on: ubuntu-latests
+      needs: [Linter, Prettier]
+      permissions:
+        contents: read
+        packages: read
+        statuses: write
+
+      steps:
+        - name: Downloading the artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: production-code
+            path: .
+
+        - name: Setup Node.Js
+          uses: actions/setup-node@v4
+          with: 
+            node-version: '20'
+        
+        - name: Installing dependencies
+          run: npm install
+
+        - name: Running test
+          run: npm test 
         
   SAST-Security:
       name: Security analyzer with CodeQL
       runs-on: ubuntu-latest
-      needs: [Linter, Prettier]
+      needs: [Unit-Tests]
       permissions:
         contents: read
         packages: read
@@ -101,7 +128,7 @@ jobs:
   SCA-Security:
       name: Security dependency analizer with Trivy
       runs-on: ubuntu-latest
-      needs: [Linter, Prettier]
+      needs: [Unit-Tests]
       permissions:
         contents: read
         packages: read
