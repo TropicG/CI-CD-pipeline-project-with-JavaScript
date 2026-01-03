@@ -50,20 +50,21 @@ jobs:
         statuses: write
       
       steps:
-        - name: Download the artifact
-          uses: actions/download-artifact@v4
-          with:
-            name: production-code
-            path: .
-          
+        # Downloading the code from Git repo
+        - name: Downloading the Code
+          uses: actions/checkout@v4
+
+        # Setup Node js
         - name: Setup Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '20'
 
+        # Installing dependencies
         - name: Install dependencies
           run: npm install
-    
+
+        # running linting
         - name: Run Linter
           run: npm run lint
 
