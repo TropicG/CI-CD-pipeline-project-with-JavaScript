@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # installing all the necessaries libs 
-RUN npm install --only=production
+RUN npm install
 
 # copying the remaining code (src currently) into the workdir for the container
 COPY . .
