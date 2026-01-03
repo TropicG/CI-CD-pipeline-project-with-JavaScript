@@ -69,51 +69,67 @@ jobs:
           run: npm run lint
 
   Unit-Tests:
-      name: Downloading the artifact
+      name: Performing UTs
       runs-on: ubuntu-latest
+      # Starts the Unit Tests after the lintering job is finished
       needs: [Linter]
       permissions:
+        # allows the job to download the code and read the code 
         contents: read
+        # allows the job to download and read the dependencies 
         packages: read
+        # allows to write info for the pipeline
         statuses: write
 
       steps:
+        # Downloading the artifact created in Build process
         - name: Downloading the artifact
           uses: actions/download-artifact@v4
           with:
             name: production-code
             path: .
 
+        # Set up node js
         - name: Setup Node.Js
           uses: actions/setup-node@v4
           with: 
             node-version: '20'
-        
+
+        # installing dependencies
         - name: Installing dependencies
           run: npm install
 
+        # Running tests to be performed every time a new commit is inserted
         - name: Running test
           run: npm test 
         
   SAST-Security:
       name: Security analyzer with CodeQL
       runs-on: ubuntu-latest
+      # Starts the SAST security check after the lintering job is finished
       needs: [Unit-Tests]
       permissions:
+        # allows the job to download the code and read the code 
         contents: read
+        # allows the job to download and read the dependencies 
         packages: read
+        # allows to write info for the pipeline
         statuses: write
+        # allows permission to write security information in Security tab in Github 
         security-events: write
 
       steps:
+        # Downloading the code from the repo
         - name: Downloading code from repo
           uses: actions/checkout@v4
 
+        # Initializing CodeQl 
+        # CodeQl is used to find vulnerabilities 
         - name: Initialize CodeQL
           uses: github/codeql-action/init@v3
           with:
             languages: 'javascript'
-
+            
         - name: Perform CodeQL Analysis
           uses: github/codeql-action/analyze@v3
 
