@@ -205,5 +205,22 @@ jobs:
           
           echo "Testing URL..."
           curl --fail http://localhost:3000
+
+          curl -s "http://localhost:3000/add?a=10&b=20" | grep "Result: 30"
+          if [ $? -eq 0 ]; then
+            echo "✅ Addition Logic works (10+20=30)"
+          else
+            echo "❌ Addition Logic FAILED"
+            exit 1
+          fi
+
+          # TEST 3: Valid Subtraction (50 - 20 = 30)
+          curl -s "http://localhost:3000/subtract?a=50&b=20" | grep "Result: 30"
+          if [ $? -eq 0 ]; then
+             echo "✅ Subtraction Logic works (50-20=30)"
+          else
+             echo "❌ Subtraction Logic FAILED"
+             exit 1
+          fi
           
           echo "SUCCESS! App is running in Kubernetes!"
