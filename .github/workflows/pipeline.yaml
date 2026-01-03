@@ -1,5 +1,6 @@
 name: CI-CD-JS-workflow
 
+# A pipeline will be activated every time on push to main, or pull request to main 
 on:
   push:
     branches: [ main ]
@@ -8,46 +9,57 @@ on:
 
 jobs:
   Build:
+    # using the latest ubunt for the build process
     runs-on: ubuntu-latest
 
+    # downloading the code from the repo
     steps:
     - name: Downloading the Code
       uses: actions/checkout@v4
 
+    # setup node js
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
 
+    # installing dependencies
     - name: Installing dependencies
       run: npm install
-      
+
+    # uploading the artifacts
     - name: Uploading Artifact
       uses: actions/upload-artifact@v4
       with:
         name: production-code
+        # everything from the root folder will be stored into the artifact 
         path: .
 
   Linter:
+      # step to check for errors and bad code style
       name: Code checking with Linter
       runs-on: ubuntu-latest
+      # this step should be performed after the building job 
       needs: [Build]
       permissions:
+        # allows the job to download the code and read the code 
         contents: read
+        # allows the job to download and read the dependencies 
         packages: read
+        # allows to write info for the pipeline
         statuses: write
       
       steps:
-        - name: Download code from repo
-          uses: actions/checkout@v4
+        - name: Download the artifact
+          uses: actions/download-artifact@v4
+          with:
+            name: production-code
+            path: .
           
         - name: Setup Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '20'
-
-        - name: Install dependencies
-          run: npm install
     
         - name: Run Linter
           run: npm run lint
