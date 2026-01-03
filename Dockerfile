@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Docker will start this command when the container is fully initialized
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]
