@@ -135,76 +135,103 @@ jobs:
 
   SCA-Security:
       name: Security dependency analizer with Trivy
+      # Runs on the latests ubuntu release
       runs-on: ubuntu-latest
+      # Starts after UnitTesting, parallel execution with SAST
       needs: [Unit-Tests]
       permissions:
+        # allows the job to download the code and read the code 
         contents: read
+        # allows the job to download and read the dependencies 
         packages: read
+        # allows to write info for the pipeline
         statuses: write
+         # allows permission to write security information in Security tab in Github 
         security-events: write 
     
       steps:
+        # Downloading code from repo
         - name: Checkout code
           uses: actions/checkout@v4
 
         - name: Run Trivy Scanner for Dependencies
           uses: aquasecurity/trivy-action@master
+          # configuration trivy
           with:
+          # trivy will scan all file systems searching for deependency files, it wont scan docker image
             scan-type: 'fs'
+            # scan the current directory (meaning the whole project)
             scan-ref: '.'
+            # in case of error or unsuccess, it will throw error code 1
             exit-code: '1'
+            # trivy will fail and it will show only those errors that are CRITICAL or HIGH
             severity: 'CRITICAL,HIGH'
 
   Docker-Build-Push:
-    name: Building and pushing Docker image to DockerHub
+    name: Docker build with push to DockerHub
     runs-on: ubuntu-latest
+    # still step will be performed after the code security analysis
     needs: [SAST-Security, SCA-Security]
 
     steps:
+      # downloading the code from repo
       - name: Checkout code
         uses: actions/checkout@v4
-
+      # login to dockerhub
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
+        # Gettings secrets that can be found in Github settins, those usernames and passwords are used to log in into dockerhub
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        
+
+      # Buildx is an extension which is more modern and is ised to created the container
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Building and pushing the docker image to DockerHub
       - name: Build and push 
         uses: docker/build-push-action@v5
         with:
+          # get everything in the current directory, in the main directory is the Dockerfile
           context: .
+          # When the image is built, it shall be uploaded to DockerHub
           push: true
+          # setting the latest label for the image, this specific commit will be used to specify the container 
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/my-app:latest
             ${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }}
   
-  Post-Build-Scan:
-    name: Security Scan on Remote Image
+  DockerImage-Security-Scan:
+    name: DockerImage Security Scan
     runs-on: ubuntu-latest
+    # after the docker image was uploaded to DockerHub, then it is download to be analysed
     needs: [Docker-Build-Push]
     
     steps:
       - name: Run Trivy on Docker Hub Image
         uses: aquasecurity/trivy-action@master
         with:
+          # now it will search to analyse images
           scan-type: 'image'
+          # tells exactly which image to search, download and scan
           image-ref: '${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }}'
+          # logs will be shown in a table 
           format: 'table'
+          # in case of a problem throw 1
           exit-code: '1'
+          # trivy will fail and it will show only those errors that are CRITICAL
           severity: 'CRITICAL'
-          ignore-unfixed: true
+        # environment variables
         env:
+          # Trivy is neede for docker username and docker password so it can download it and scan it
           TRIVY_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           TRIVY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   Deploy-Test-K8s:
     name: Test Deployment in Kubernetes (Kind)
     runs-on: ubuntu-latest
-    needs: [Post-Build-Scan]
+    needs: [DockerImage-Security-Scan]
     
     steps:
       - name: Checkout code
@@ -225,17 +252,14 @@ jobs:
         run: kubectl apply -f deployment.yaml
 
       - name: Verify Deployment
-        run: |
-          echo "Waiting for pod to be ready..."
-          kubectl rollout status deployment/my-js-app --timeout=60s
+        run: kubectl rollout status deployment/my-js-app --timeout=60s
 
       - name: Test Endpoint
         run: |
           kubectl port-forward deployment/my-js-app 3000:3000 &
           
           sleep 5
-          
-          echo "Testing URL..."
+        
           curl --fail http://localhost:3000
 
           curl -s "http://localhost:3000/add?a=10&b=20" | grep "Result: 30"
