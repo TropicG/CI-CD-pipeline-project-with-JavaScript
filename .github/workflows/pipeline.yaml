@@ -231,51 +231,66 @@ jobs:
   Deploy-Test-K8s:
     name: Test Deployment in Kubernetes (Kind)
     runs-on: ubuntu-latest
+    # After the security scan on the image, proceed with Kubernetes deployment
     needs: [DockerImage-Security-Scan]
     
     steps:
+      # Downloading code from repo 
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Create k8s Kind Cluster
+      # Starts Kubernetes cluster that will last only for a couple of minutes 
         uses: helm/kind-action@v1.9.0
 
+      # creating the deployment manifest
       - name: Create Deployment Manifest
+        # creating the yaml file for the deployment 
         run: |
+          # creating the deployment that uses the image with the secret information
           kubectl create deployment my-js-app \
             --image=${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }} \
+            # only 1 active pode will be working
             --replicas=1 \
+            # setting port 3000 for the pod
             --port=3000 \
+            # generates the yaml file and saves it to the deployment.yaml
             --dry-run=client -o yaml > deployment.yaml
 
       - name: Apply to Cluster
+        # creating the deployment with the generated yaml file
         run: kubectl apply -f deployment.yaml
 
       - name: Verify Deployment
+        # this will wait here until the deployment is running correctly
         run: kubectl rollout status deployment/my-js-app --timeout=60s
 
-      - name: Test Endpoint
+        # Final smoke 
+      - name: Perform Smoke Tests
         run: |
+          # creating port-forward to communicate with the deployment and start the process in the background
           kubectl port-forward deployment/my-js-app 3000:3000 &
-          
           sleep 5
-        
+
+          # Just to see is the server returning 200 OK
           curl --fail http://localhost:3000
 
+          # testing the server to see does it add two numbers
           curl -s "http://localhost:3000/add?a=10&b=20" | grep "Result: 30"
+          # checks the status of the last command (grep "Result: 30") and its status
           if [ $? -eq 0 ]; then
+            # successfull check
             echo "✅ Addition Logic works (10+20=30)"
           else
-            echo "❌ Addition Logic FAILED"
+            # unsuccessful check 
             exit 1
           fi
 
-          # TEST 3: Valid Subtraction (50 - 20 = 30)
+          # testing the server to see does it subtract two numbers
           curl -s "http://localhost:3000/subtract?a=50&b=20" | grep "Result: 30"
           if [ $? -eq 0 ]; then
              echo "✅ Subtraction Logic works (50-20=30)"
           else
-             echo "❌ Subtraction Logic FAILED"
              exit 1
           fi
           
