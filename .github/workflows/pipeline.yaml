@@ -282,5 +282,12 @@ jobs:
           else
              exit 1
           fi
-          
+
+          curl -s "http://localhost:3000/multiply?a=5&b=2" | grep "Result: 10"
+          if [ $? -eq 0 ]; then
+             echo "✅ multiply Logic works (5*2=10)"
+          else
+             exit 1
+          fi
+
           echo "SUCCESS! App is running in Kubernetes!"
