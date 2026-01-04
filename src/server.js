@@ -2,7 +2,7 @@
 const express = require("express");
 
 // loads the file math.js and it is applying destructing, meaning that only the functions add and subtract are added
-const { add, subtract } = require("./math");
+const { add, subtract, multiply } = require("./math");
 
 // creating and initlizing the server, 0.0.0.0 means listen to all endpoints
 const app = express();
@@ -26,6 +26,13 @@ app.get("/subtract", (req, res) => {
   const a = parseInt(req.query.a) || 0;
   const b = parseInt(req.query.b) || 0;
   res.send(`Result: ${subtract(a, b)}`);
+});
+
+// this tells the server what to do when / page is open 
+app.get("/multiply", (req, res) => {
+  const a = parseInt(req.query.a) || 0;
+  const b = parseInt(req.query.b) || 0;
+  res.send(`Result: ${multiply(a, b)}`);
 });
 
 // the server starts to listen for requests
