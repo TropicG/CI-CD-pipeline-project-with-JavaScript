@@ -283,21 +283,21 @@ jobs:
           
           curl -s "http://localhost:3000/add?a=10&b=20" | grep "Result: 30"
           if [ $? -eq 0 ]; then
-            echo "✅ Addition Logic works (10+20=30)"
+            echo "Addition Logic works (10+20=30)"
           else
             exit 1
           fi
           
           curl -s "http://localhost:3000/subtract?a=50&b=20" | grep "Result: 30"
           if [ $? -eq 0 ]; then
-             echo "✅ Subtraction Logic works (50-20=30)"
+             echo "Subtraction Logic works (50-20=30)"
           else
              exit 1
           fi
 
           curl -s "http://localhost:3000/multiply?a=5&b=2" | grep "Result: 10"
           if [ $? -eq 0 ]; then
-             echo "✅ multiply Logic works (5*2=10)"
+             echo "multiply Logic works (5*2=10)"
           else
              exit 1
           fi
