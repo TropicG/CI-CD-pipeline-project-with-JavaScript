@@ -247,10 +247,6 @@ jobs:
     needs: [DockerImage-Security-Scan]
     
     steps:
-      # Downloading code from repo 
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Create k8s Kind Cluster
       # Starts Kubernetes cluster that will last only for a couple of minutes 
         uses: helm/kind-action@v1.9.0
