@@ -35,7 +35,7 @@ jobs:
         # everything from the root folder will be stored into the artifact 
         path: |
           src/
-          test/
+          tests/
           package.json
           package-lock.json
           node-modules/
