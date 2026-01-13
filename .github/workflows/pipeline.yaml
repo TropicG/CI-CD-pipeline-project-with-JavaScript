@@ -33,7 +33,11 @@ jobs:
       with:
         name: production-code
         # everything from the root folder will be stored into the artifact 
-        path: .
+        path: |
+          src/
+          package.json
+          package-lock.json
+          node-modules/
 
   Linter:
       # step to check for errors and bad code style
