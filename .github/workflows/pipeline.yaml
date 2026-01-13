@@ -36,6 +36,7 @@ jobs:
         path: |
           src/
           tests/
+          .eslintrc.json
           package.json
           package-lock.json
           node-modules/
