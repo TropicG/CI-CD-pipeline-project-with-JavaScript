@@ -74,7 +74,7 @@ jobs:
           run: npm install
 
         - name: Configuration esling init
-          run: npm init @eslint/config
+          run: npm init @eslint/config@latest
 
         # running linting
         - name: Run Linter
