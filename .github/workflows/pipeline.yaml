@@ -186,9 +186,12 @@ jobs:
     needs: [SAST-Security, SCA-Security]
 
     steps:
-      # downloading the code from repo
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # Downloading the artifact created in Build process
+      - name: Downloading the artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-code
+          path: .
       # login to dockerhub
       - name: Login to DockerHub
         uses: docker/login-action@v3
