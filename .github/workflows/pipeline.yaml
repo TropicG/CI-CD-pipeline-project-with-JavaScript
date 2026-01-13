@@ -41,6 +41,7 @@ jobs:
           package-lock.json
           node-modules/
           Dockerfile
+          .dockerignore
 
   Linter:
       # step to check for errors and bad code style
