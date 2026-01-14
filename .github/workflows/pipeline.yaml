@@ -156,12 +156,9 @@ jobs:
         security-events: write 
     
       steps:
-        # Downloading the artifact created in Build process
-        - name: Downloading the artifact
-          uses: actions/download-artifact@v4
-          with:
-            name: production-code
-            path: .
+         # Downloading the code from the repo
+        - name: Downloading the Code
+          uses: actions/checkout@v4
 
         - name: Run Trivy Scanner for Dependencies
           uses: aquasecurity/trivy-action@master
